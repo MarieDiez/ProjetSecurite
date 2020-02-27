@@ -180,7 +180,7 @@
             <property name="can_focus">False</property>
             <property name="xpad">160</property>
             <property name="ypad">90</property>
-            <property name="pixbuf">img/1.tiff</property>
+            <property name="pixbuf">img/2.png</property>
           </object>
           <packing>
             <property name="expand">False</property>

@@ -1,2 +1,0 @@
-all:
-	cd src && gcc -rdynamic `pkg-config --cflags gtk+-3.0` mediaplayer.c -o ../mediaplayer `pkg-config --libs gtk+-3.0`
