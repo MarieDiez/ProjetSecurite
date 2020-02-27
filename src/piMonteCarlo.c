@@ -3,22 +3,23 @@
 #include <gtk/gtk.h>
 #include <time.h>
 
-int incrementeCptInCircle(int cpt, double x, double y);
+int incrementeCptInCircle(int index, int cpt);
+void call_monte_carlo();
 
-def struct _Point{
+typedef struct _Point{
 	double x;
 	double y;
 	int inner;
-}
+} Point;
 
-int nb_point;
-
-
+Point *lst_point;
+int nb_point = 1;
+int nb_point_lastdraw = 1;
 
 // GTK callback
 
 void _on_destroy_main_window(GtkButton *button, gpointer user_data){
-    gtk_main_quit();
+	gtk_main_quit();
 }
 
 void _on_spin_value_changed(GtkSpinButton *spin_button, gpointer user_data){
@@ -26,7 +27,8 @@ void _on_spin_value_changed(GtkSpinButton *spin_button, gpointer user_data){
 }
 
 void _on_calculate_clicked(GtkButton *button, gpointer user_data){
-	printf("%d\n",42);
+	nb_point_lastdraw = nb_point;
+	call_monte_carlo();
 }
 
 gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data){
@@ -46,44 +48,56 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data){
 	cairo_set_line_width (cr, 2.0);
 	cairo_arc(
 		cr,
-	  	0,						// x
-	  	height,					// y
+		0,			// x
+		height,			// y
 		MIN (width, height),	// rayon
-		0,						// angle1
-		2 * G_PI				// angle2
+		G_PI/2,			// angle1
+		0		// angle2
 	);
 	cairo_stroke(cr);
-	
-	cairo_set_source_rgba (cr, 1, 0.2, 0.2, 0.6);
-	
 
-  	cairo_fill (cr);
-
+	cairo_set_line_width (cr, 1.0);
+	if (lst_point){
+		for(int i = 0 ; i < nb_point_lastdraw ; i++){
+			if (lst_point[i].inner) {
+				cairo_set_source_rgba (cr, 0.2, 0.2, 1, 0.6);
+			}else{
+				cairo_set_source_rgba (cr, 1, 0.2, 0.2, 0.6);
+			}
+			cairo_arc(
+				cr,
+				lst_point[i].x * MIN(width, height),
+				height - lst_point[i].y * MIN(width, height),
+				2,
+				0,
+				2 * G_PI
+			);
+			cairo_fill (cr);
+		}
+	}
  return FALSE;
 }
 
 // calcule
 
 void call_monte_carlo(){
-
-
 	int cpt = 0;
-
-	
-	for (int i=0; i<nb_point; i++){
-		x =  rand()/(double)RAND_MAX;
-		y =  rand()/(double)RAND_MAX;
-
-		cpt = incrementeCptInCircle(cpt, x, y);
-
+	lst_point = realloc(lst_point, nb_point * sizeof(Point));
+	if (lst_point){
+		for (int i=0; i<nb_point; i++){
+			Point p;
+			p.x =  rand()/(double)RAND_MAX;
+			p.y =  rand()/(double)RAND_MAX;
+			p.inner = 0;
+			
+			if (p.x*p.x + p.y*p.y <= 1){
+				cpt++;
+				p.inner = 1;
+			}
+			lst_point[i] = p;
+		}
+		printf("%s %.7f\n", "pi = ",((double)cpt*4)/nb_point);
 	}
-	printf("%s %.7f\n", "pi = ",((double)cpt*4)/nb_point);
-}
-
-int incrementeCptInCircle(int cpt, double x, double y){
-	if (x*x + y*y <= 1)
-		cpt++;
-	return cpt;
 }
 
 /*
@@ -107,7 +121,7 @@ int main(int argc, char* argv[]){
 	//GObjects
     GtkSpinButton * btn_spin = (GtkSpinButton*) gtk_builder_get_object(builder, "nb_selector");
     GtkDrawingArea * drawing_area = (GtkDrawingArea*) gtk_builder_get_object(builder, "drawing_area");
-    
+
     //signals
     g_signal_connect(btn_spin, "value-changed", G_CALLBACK(_on_spin_value_changed), NULL);
 	g_signal_connect (G_OBJECT (drawing_area), "draw", G_CALLBACK (draw_callback), NULL);

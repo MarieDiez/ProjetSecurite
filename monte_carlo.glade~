@@ -3,7 +3,7 @@
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <object class="GtkAdjustment" id="nb_selector_content">
-    <property name="upper">10000</property>
+    <property name="upper">100000</property>
     <property name="value">100</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
@@ -27,6 +27,18 @@
           <object class="GtkBox">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <child>
+              <object class="GtkDrawingArea" id="drawing_area">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="padding">1</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
             <child>
               <object class="GtkButtonBox">
                 <property name="visible">True</property>
@@ -75,7 +87,7 @@
             </child>
           </object>
           <packing>
-            <property name="expand">False</property>
+            <property name="expand">True</property>
             <property name="fill">True</property>
             <property name="position">0</property>
           </packing>
