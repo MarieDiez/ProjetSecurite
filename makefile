@@ -4,7 +4,7 @@ all :
 	gcc src/date.c -o build/date
 	gcc src/inertieIntraClasse.c -o build/inertieIntraClasse
 	gcc src/piece.c -o build/piece
-	
+
 mediaplayer :
 	cd src && gcc -rdynamic `pkg-config --cflags gtk+-3.0` mediaplayer.c -o ../build/mediaplayer `pkg-config --libs gtk+-3.0`
 	
