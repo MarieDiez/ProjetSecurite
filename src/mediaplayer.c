@@ -33,8 +33,6 @@ void chargerImage(){
 	    }
 	}
     closedir (pDirect);
-    free(dir);
-    free(pDirect);
 }
 void afficher(){
 	char path[100] = "../img/";
