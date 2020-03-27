@@ -1,2 +1,4 @@
 build/*
 vgcore.*
+*.glade~
+*.glade#
