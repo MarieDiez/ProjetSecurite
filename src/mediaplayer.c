@@ -13,6 +13,8 @@ char * prog;
 int nbImage = 5;
 int k = 0;
 char ** images_path;
+int h = 650;
+int w = 380;
 
 void on_destroy_main_window(GtkButton *button, gpointer user_data){
     gtk_main_quit();
@@ -37,7 +39,10 @@ void chargerImage(){
 void afficher(){
 	char path[100] = "../img/";
     strcat(path,images_path[k]);
-    gtk_image_set_from_file(image, path);
+    GdkPixbuf *pixbuf;
+    pixbuf = gdk_pixbuf_new_from_file_at_scale(path, h, w, FALSE, NULL);
+    gtk_image_set_from_pixbuf(image,pixbuf);
+    //gtk_image_set_from_file(image, path);
 }
 
 void on_btn_next_clicked(GtkButton *button, gpointer user_data){
@@ -148,6 +153,7 @@ int main(int argc, char *argv[]){
 		images_path[i] = malloc(sizeof(char*));
 	}
 	chargerImage();
+	afficher();
 
 	int n = getN();
 	struct stat buf;
