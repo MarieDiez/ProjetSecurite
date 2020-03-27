@@ -86,7 +86,8 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data){
 
 void call_monte_carlo(){
 	int cpt = 0;
-	lst_point = realloc(lst_point, nb_point * sizeof(Point));
+
+	lst_point = realloc(lst_point, nb_point * sizeof(Point) + sizeof(void*));
 	if (lst_point){
 		for (int i=0; i<nb_point; i++){
 			Point p;
@@ -129,13 +130,20 @@ int main(int argc, char* argv[]){
 
 	// signals
 	g_signal_connect(btn_spin, "value-changed", G_CALLBACK(_on_spin_value_changed), NULL);
-	g_signal_connect (G_OBJECT (drawing_area), "draw", G_CALLBACK (draw_callback), NULL);
+	g_signal_connect(G_OBJECT (drawing_area), "draw", G_CALLBACK (draw_callback), NULL);
 
 	// - - -
 	g_object_unref(builder);
 	gtk_widget_show(window);
 	gtk_main();
-
+	/*gtk_widget_destroy(window);
+	g_free(builder);
+	g_free(window);
+	g_free(drawing_area);
+	g_free(btn_spin);*/
+	if(lst_point){
+		free(lst_point);
+	}
 	return EXIT_SUCCESS;
 } 
 
