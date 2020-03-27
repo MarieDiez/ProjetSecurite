@@ -92,7 +92,7 @@ double gradientB(double a, double b, double (*model)(double), double m, Point * 
 }
 
 void gradientDescent(){
-	lst_point = malloc(m * sizeof(Point));
+	lst_point = realloc(lst_point, m * sizeof(Point));
 	for (int i = 0; i < m; i++){
 		Point p;
 		p.x =  rand()/(double)RAND_MAX;
@@ -138,5 +138,11 @@ int main(int argc, char* argv[]){
 	g_object_unref(builder);
 	gtk_widget_show(window);
 	gtk_main();
+
+	if (lst_point){
+		free(lst_point);
+	}
+	gtk_widget_destroy(window);
+	
 	return EXIT_SUCCESS;
 }

@@ -14,10 +14,9 @@ typedef struct _Points {
 } Points;
 
 
-double distanceCarreEuclienne(Point * a, Point *  b){
-	printf("%d %d\n",b->x, b->y);
-	double val1 = ((double)a->x-(double)b->x)*((double)a->x-(double)b->x); 
-	double val2 = ((double)a->y-(double)b->y)*((double)a->y-(double)b->y); 
+double distanceCarreEuclienne(Point a, Point b){
+	double val1 = ((double)a.x-(double)b.x)*((double)a.x-(double)b.x); 
+	double val2 = ((double)a.y-(double)b.y)*((double)a.y-(double)b.y); 
 	return  val1 + val2;
 }
 
@@ -46,8 +45,8 @@ int nombreGrps(Points * points){
 	return groupe+1;
 }
 
-Point * mean(Points * points){
-	Point * pts = malloc(sizeof(Point));
+Point mean(Points * points){
+	Point pts;
 	int n = points->nb;
 	int x = 0;
 	int y = 0;
@@ -56,9 +55,9 @@ Point * mean(Points * points){
 		x += points->listPoint[i].x;
 		y += points->listPoint[i].y;
 	}
-	pts->x = x/n;
-	pts->y = y/n;
-	pts->groupe = points->listPoint[0].groupe;
+	pts.x = x/n;
+	pts.y = y/n;
+	pts.groupe = points->listPoint[0].groupe;
 
 	return pts;
 }
@@ -70,10 +69,11 @@ double inertieIntraClasse(Points * points){
 	for (int i = 0; i < nbGrp; i++){
 		Points * ptsInGrps = getPtsGroupe(points, i);
 		for (int j = 0 ; j < ptsInGrps->nb; j++){
-			dist += distanceCarreEuclienne(&ptsInGrps->listPoint[j],mean(ptsInGrps));
+			dist += distanceCarreEuclienne(ptsInGrps->listPoint[j],mean(ptsInGrps));
 		}
+		free(ptsInGrps->listPoint);
+		free(ptsInGrps);
 	}
-	printf("%.2f\n", dist);
 	return dist/n;
 }
 
@@ -91,31 +91,30 @@ int main(){
 	printf("%s ", "Nombre de groupe : ");
 	scanf("%d",&n);
 	printf("%d\n", (n*10)*10*sizeof(char));
-	char ptsGrps[(n*MAX_PTS*2*sizeof(char))*sizeof(pts)];
-	strcpy(ptsGrps, "");
+	//char ptsGrps[(n*MAX_PTS*2*sizeof(char))*sizeof(pts)];
+	//strcpy(ptsGrps, "");
 	Points * mesPoints = malloc(sizeof(Points));
 	mesPoints->listPoint = malloc(n*sizeof(Point));
-
 	for (int i = 0; i < n; i++){
 		printf("Nombre de points dans le groupe %d (max: %d): ", i+1, MAX_PTS);
 		scanf("%d",&nbGrp);
-
+		mesPoints->listPoint = realloc(mesPoints->listPoint,n*nbGrp*sizeof(Point));
 		for (int j = 0; j < nbGrp; j++) {
-			Point * monPts = malloc(sizeof(Point));
+			Point monPts;
 			printf("Points n°%d -> x : ", j+1);
-			scanf("%d",&monPts->x);
+			scanf("%d",&monPts.x);
 			printf("Points n°%d -> y : ", j+1);
-			scanf("%d",&monPts->y);
-			monPts->groupe = i;
-			mesPoints->listPoint[cpt] = *monPts;
+			scanf("%d",&monPts.y);
+			monPts.groupe = i;
+			mesPoints->listPoint[cpt] = monPts;
 			printf("-----------\n");
 			cpt++;
 		}
 	}
 	mesPoints->nb = cpt;
 	printf("%.2f\n", inertieIntraClasse(mesPoints));
-	//printf("%.2f\n", distanceCarreEuclienne(mesPoints->listPoint[0],mesPoints->listPoint[1]));
 
-
+	free(mesPoints->listPoint);
+	free(mesPoints);
 	return EXIT_SUCCESS;
 }
