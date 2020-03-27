@@ -33,6 +33,8 @@ void chargerImage(){
 	    }
 	}
     closedir (pDirect);
+    free(dir);
+    free(pDirect);
 }
 void afficher(){
 	char path[100] = "../img/";
@@ -143,7 +145,7 @@ int main(int argc, char *argv[]){
     gtk_builder_connect_signals(builder, NULL);
     image = (GtkImage*) gtk_builder_get_object(builder, "img_mediaplayer");	
 	
-	images_path = malloc(nbImage * sizeof(char*));
+	images_path = realloc(images_path, nbImage * sizeof(char*));
 	for (int i = 0 ; i<nbImage; i++){
 		images_path[i] = malloc(sizeof(char*));
 	}
@@ -175,7 +177,13 @@ int main(int argc, char *argv[]){
 	g_object_unref(builder);
 	gtk_widget_show(window);
 	gtk_main();
-	
+
+	for (int i = 0; i < nbImage; i++){
+		free(images_path[i]);
+	}
+	free(images_path);
+	gtk_widget_destroy(window);
+
     return 0;
 }
 
