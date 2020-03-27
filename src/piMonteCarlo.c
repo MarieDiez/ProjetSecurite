@@ -118,7 +118,7 @@ int main(int argc, char* argv[]){
 	// constructing window
 	gtk_init(&argc, &argv);
 	builder = gtk_builder_new();
-	gtk_builder_add_from_file(builder, "../monte_carlo.glade", NULL);
+	gtk_builder_add_from_file(builder, "../glade/monte_carlo.glade", NULL);
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "monte_carlo"));
 	gtk_builder_connect_signals(builder, NULL);
 
