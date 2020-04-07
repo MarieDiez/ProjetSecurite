@@ -52,11 +52,11 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data){
 	cairo_set_line_width (cr, 2.0);
 	cairo_arc(
 			cr,
-			0,			// x
-			height,			// y
+			0,						// x
+			height,					// y
 			MIN (width, height),	// rayon
-			G_PI/2,			// angle1
-			0			// angle2
+			G_PI/2,					// angle1
+			0						// angle2
 		 );
 	cairo_stroke(cr);
 
@@ -136,11 +136,7 @@ int main(int argc, char* argv[]){
 	g_object_unref(builder);
 	gtk_widget_show(window);
 	gtk_main();
-	/*gtk_widget_destroy(window);
-	g_free(builder);
-	g_free(window);
-	g_free(drawing_area);
-	g_free(btn_spin);*/
+	
 	if(lst_point){
 		free(lst_point);
 	}

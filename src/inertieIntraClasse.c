@@ -91,8 +91,6 @@ int main(){
 	printf("%s ", "Nombre de groupe : ");
 	scanf("%d",&n);
 	printf("%d\n", (n*10)*10*sizeof(char));
-	//char ptsGrps[(n*MAX_PTS*2*sizeof(char))*sizeof(pts)];
-	//strcpy(ptsGrps, "");
 	Points * mesPoints = malloc(sizeof(Points));
 	mesPoints->listPoint = malloc(n*sizeof(Point));
 	for (int i = 0; i < n; i++){
