@@ -121,13 +121,13 @@ int main(int argc, char* argv[]){
 
 	srand(time(0));
 	GtkBuilder *builder;
-    GtkWidget *window;
+	GtkWidget *window;
 	// constructing window
-    gtk_init(&argc, &argv);
-    builder = gtk_builder_new();
-    gtk_builder_add_from_file(builder, "../glade/gradient_descent.glade", NULL);
-    window = GTK_WIDGET(gtk_builder_get_object(builder, "gradient_descent"));
-    gtk_builder_connect_signals(builder, NULL);
+	gtk_init(&argc, &argv);
+	builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, "../glade/gradient_descent.glade", NULL);
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "gradient_descent"));
+	gtk_builder_connect_signals(builder, NULL);
 	// GObjects
 	GtkSpinButton * btn_spin = (GtkSpinButton*) gtk_builder_get_object(builder, "nb_selector");
 	// Global GObjects
@@ -143,6 +143,6 @@ int main(int argc, char* argv[]){
 		free(lst_point);
 	}
 	gtk_widget_destroy(window);
-	
+
 	return EXIT_SUCCESS;
 }

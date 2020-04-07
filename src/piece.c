@@ -36,7 +36,7 @@ int main(){
 		} else if (strcmp(piece,"q") == 0 || strcmp(piece,"Q") == 0){
 			return EXIT_SUCCESS;
 		} else {
-			printf("%s\n", "Erreur d'écriture");	
+			printf("%s\n", "Erreur d'écriture");
 		}
 
 		if (facePiece == choixUser ){
@@ -51,7 +51,7 @@ int main(){
 			} else {
 				printf("%s : %d€\n","Vous perdez votre mise, il vous reste",argent);
 			}
-			
+
 		}
 	}
 	if (argent <= 0){

@@ -19,27 +19,27 @@ int main(){
   	scanf("%d", &annee0);
   	printf("\n%s : %d/%d/%d\n", "Date entrée",jour0,mois0,annee0);
 
-	struct tm *local = localtime(&now);   
-	jour = local->tm_mday;          
-	mois = local->tm_mon + 1;     
+	struct tm *local = localtime(&now);
+	jour = local->tm_mday;
+	mois = local->tm_mon + 1;
 	annee = local->tm_year + 1900;
 	printf("Date d'aujourd'hui : %02d/%02d/%d\n", jour, mois, annee);
 
-	if(jour < jour0){      
-        if (mois == 3) {
-            if ((annee % 4 == 0 && annee % 100 != 0) || (annee % 400 == 0)) {
-                jour += 29;
-            } else {
-                jour += 28;
-            }                        
-        } else if (mois == 5 || mois == 7 || mois == 10 || mois == 12) {
-           jour += 30; 
+	if(jour < jour0){
+		if (mois == 3) {
+			if ((annee % 4 == 0 && annee % 100 != 0) || (annee % 400 == 0)) {
+				jour += 29;
+			} else {
+				jour += 28;
+			}
+		} else if (mois == 5 || mois == 7 || mois == 10 || mois == 12) {
+			jour += 30;
         } else {
            jour += 31;
         }
         mois = mois - 1;
     }
-    
+
     if (mois < mois0) {
         mois += 12;
         annee -= 1;

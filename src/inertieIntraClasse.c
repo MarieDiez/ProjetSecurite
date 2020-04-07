@@ -15,8 +15,8 @@ typedef struct _Points {
 
 
 double distanceCarreEuclienne(Point a, Point b){
-	double val1 = ((double)a.x-(double)b.x)*((double)a.x-(double)b.x); 
-	double val2 = ((double)a.y-(double)b.y)*((double)a.y-(double)b.y); 
+	double val1 = ((double)a.x-(double)b.x)*((double)a.x-(double)b.x);
+	double val2 = ((double)a.y-(double)b.y)*((double)a.y-(double)b.y);
 	return  val1 + val2;
 }
 
